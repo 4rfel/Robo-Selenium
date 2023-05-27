@@ -336,3 +336,6 @@ class Robo:
                         break
             except self.ignored_exceptions:
                 pass
+
+    def quit(self):
+        self.browser.quit()
