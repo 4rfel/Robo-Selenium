@@ -1,0 +1,9 @@
+LICENSE
+README.md
+pyproject.toml
+setup.cfg
+src/robo-selenium/__init__.py
+src/robo_selenium.egg-info/PKG-INFO
+src/robo_selenium.egg-info/SOURCES.txt
+src/robo_selenium.egg-info/dependency_links.txt
+src/robo_selenium.egg-info/top_level.txt
