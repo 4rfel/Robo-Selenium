@@ -1,3 +1,12 @@
+"""
+robo selenium.
+
+An example python library.
+"""
+
+__version__ = "0.1.0"
+__author__ = 'Arfel'
+
 import os
 from time import sleep, time
 from typing import List
