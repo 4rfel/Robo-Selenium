@@ -4,12 +4,12 @@ robo selenium.
 A simple selenium wrapper to make it easier to use.
 """
 
-__version__ = "0.1.0"
+__version__ = "1.1"
 __author__ = 'Arfel'
 
 import os
 from time import sleep, time
-from typing import Optional, List
+from typing import List, Union
 
 import keyboard
 import pyautogui
@@ -23,32 +23,41 @@ from selenium.common.exceptions import (ElementClickInterceptedException,
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import FirefoxBinary, Options as FirefoxOptions
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
 class Robo:
-    def __init__(self, options:FirefoxOptions, firefox_binary:Optional(str, FirefoxBinary)=None, timeout:float=10, max_attempts:int=3) -> None:
+    def __init__(self, *, options:Union[FirefoxOptions, ChromeOptions], browser_binary:Union[str, FirefoxBinary]=None, timeout:float=10, max_attempts:int=3) -> None:
         self.ignored_exceptions = (NoSuchElementException, StaleElementReferenceException, ElementNotInteractableException, ElementClickInterceptedException, InvalidElementStateException)
-        self.first:bool = True
         self.max_attempts:int = max_attempts
         self.timeout:float = timeout
-        if firefox_binary is not None:
-            if isinstance(firefox_binary, str):
-                binary = FirefoxBinary(firefox_binary)
+        driver = None
+        if isinstance(options, FirefoxOptions):
+            if browser_binary is not None:
+                if isinstance(browser_binary, str):
+                    binary = FirefoxBinary(browser_binary)
+                elif isinstance(browser_binary, FirefoxBinary):
+                    binary = browser_binary
+                else:
+                    raise TypeError(f"Opcoes com tipo errado: {type(browser_binary)}")
+                driver = webdriver.Firefox(firefox_binary=binary, options=options)
             else:
-                binary = firefox_binary
-            self.browser = webdriver.Firefox(firefox_binary=binary, options=options)
+                driver = webdriver.Firefox(options=options)
+        elif isinstance(options, ChromeOptions):
+            driver = webdriver.Chrome(options=options)
+            if browser_binary is not None:
+                raise ValueError("Browser binary nao suportado para Chrome")
         else:
-            self.browser = webdriver.Firefox(options=options)
+            raise TypeError(f"Opcoes com tipo errado: {type(options)}")
+        self.browser = driver
 
     @staticmethod
     def type_in_file_picker(data:str) -> None:
         sleep(0.2)
         os.system(f"powershell.exe -command \"Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.SendKeys]::SendWait('{data}');[System.Windows.Forms.SendKeys]::SendWait('{chr(13)}');\"")
-        sleep(0.2)
-        keyboard.press_and_release('enter')
         sleep(0.2)
         keyboard.press_and_release('enter')
         sleep(0.2)
