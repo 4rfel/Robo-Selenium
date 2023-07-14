@@ -62,6 +62,12 @@ class Robo:
         keyboard.press_and_release('enter')
         sleep(0.2)
 
+    def new_tab(self, url:str=None) -> None:
+        self.browser.execute_script("window.open('');")
+        self.browser.switch_to.window(self.browser.window_handles[-1])
+        if url is not None:
+            self.go_to_url(url)
+
     def switch_to_iframe(self, by:By, value:str, *, max_attempts:int=None, driver:WebElement=None) -> WebElement:
         self.browser.switch_to.default_content()
         attempts = 0
